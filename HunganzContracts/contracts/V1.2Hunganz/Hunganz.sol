@@ -262,6 +262,14 @@ contract Hunganz is ERC721, Ownable, CadenceRandomConsumer {
         emit LevelUp(tokenId, _hungas[tokenId].level);
         emit HealthUp(tokenId, _hungas[tokenId].health);
     }
+}
 
-    
+interface IHunganz {
+    function mint(address to, uint256 typeId, uint256 typeAlt) external;
+    function damage(uint256 tokenId, uint256 damage) external;
+    function levelUp(uint256 tokenId) external;
+    function xpUp(uint256 tokenId, uint256 xp) external;
+    function traumaUp(uint256 tokenId, uint256 trauma) external;
+    function getHunga(uint256 tokenId) external view returns (address owner, uint256 id, uint256 typeId, uint256 typeIndex, uint256 typeAlt, uint256 level, uint256 experience, uint256 evolution, uint256 health, uint256 trauma, uint256 rarity, uint256 element, string memory typeName, string memory typeUri); 
+    function tokenURI(uint256 tokenId) external view returns (string memory);
 }
