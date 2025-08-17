@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 /// @notice Minimal interface exposed by the Flow Cadence randomness bridge/precompile.
 interface IFlowRandomness {
     function flowBlockHeight() external view returns (uint64);
-    function getRandomSource(uint64 round) external view returns (bytes32);
+    function getRandomSource(uint64 round) external returns (bytes32);
 }
 
 /**
@@ -77,11 +77,11 @@ library FlowCommitRevealLib {
     // ---------- Optional conveniences ----------
 
     /// @notice Fetch the randomness beacon for a given round.
-    function beaconAt(IFlowRandomness rng, uint64 round) internal view returns (bytes32) {
+    function beaconAt(IFlowRandomness rng, uint64 round) internal returns (bytes32) {
         return rng.getRandomSource(round);
     }
 
-    function beaconAt(address rng, uint64 round) internal view returns (bytes32) {
+    function beaconAt(address rng, uint64 round) internal returns (bytes32) {
         return IFlowRandomness(rng).getRandomSource(round);
     }
 

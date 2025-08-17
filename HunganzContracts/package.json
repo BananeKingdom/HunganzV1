@@ -2,15 +2,29 @@
   "name": "HunganzContracts",
   "version": "1.0.0",
   "type": "module",
+  "scripts": {
+    "test": "npx hardhat test",
+    "compile": "npx hardhat compile",
+    "deploy:local": "npx hardhat ignition deploy ignition/modules/HunganzEcosystem.ts",
+    "deploy:testnet": "npx hardhat ignition deploy ignition/modules/HunganzEcosystem.ts --network flowTestnet",
+    "deploy:mainnet": "npx hardhat ignition deploy ignition/modules/HunganzEcosystem.ts --network flowMainnet",
+    "ipfs:upload": "node utils/ipfs-uploader.js",
+    "ipfs:batch": "node utils/batch-upload.js",
+    "clean": "npx hardhat clean"
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-ignition": "^3.0.0",
     "@nomicfoundation/hardhat-toolbox-viem": "^5.0.0",
-    "@openzeppelin/contracts": "^5.4.0",
     "@onflow/flow-sol-utils": "^0.0.1",
+    "@openzeppelin/contracts": "^5.4.0",
     "@types/node": "^22.17.2",
     "forge-std": "github:foundry-rs/forge-std#v1.9.4",
     "hardhat": "^3.0.0",
     "typescript": "~5.8.0",
     "viem": "^2.33.3"
+  },
+  "dependencies": {
+    "axios": "^1.11.0",
+    "form-data": "^4.0.4"
   }
 }

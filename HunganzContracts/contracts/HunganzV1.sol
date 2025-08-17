@@ -14,6 +14,7 @@ contract HunganzV1 is ERC721, Ownable {
 
     uint256 private _nextTokenId;
     uint256 private _nextTypeId;
+    uint256 private _nextPackTypeId;
 
     mapping(uint256 => Hunga) private _hungas;
     mapping(uint256 => HungaType) private _hungaTypes;
@@ -69,6 +70,24 @@ contract HunganzV1 is ERC721, Ownable {
         bool isDead;
     }
 
+    struct HungaInfo {
+        address owner;
+        uint256 id;
+        uint256 typeId;
+        uint256 typeIndex;
+        uint256 level;
+        uint256 experience;
+        uint256 evolution;
+        uint256 rarity;
+        uint256 element;
+        uint256 fetchCount;
+        bool isFetching;
+        uint256 nextHarvestAmount;
+        string name;
+        string uri;
+        bool isDead;
+    }
+
     string[4] private _rarityNames = ["common", "rare", "epic", "legendary"];
     string[4] private _elementNames = ["fire", "water", "plant", "air"];
 
@@ -101,6 +120,7 @@ contract HunganzV1 is ERC721, Ownable {
 
         uint256 id = _nextTypeId;
         _nextTypeId += 1;
+        _hungaTypeCount += 1;
 
         _hungaTypes[id].id = id;
         _hungaTypes[id].name = name_;
@@ -113,62 +133,84 @@ contract HunganzV1 is ERC721, Ownable {
         emit TypeAdded(id, name_, rarity_, element_, uri_);
     }
 
-    function getHunga(uint256 tokenId) public view 
-            returns (address owner, 
-                     uint256 id, 
-                     uint256 typeId, 
-                     uint256 typeIndex, 
-                     uint256 level, 
-                     uint256 experience, 
-                     uint256 evolution, 
-                     uint256 rarity, 
-                     uint256 element,
-                     uint256 fetchCount,
-                     bool isFetching,
-                     uint256 nextHarvestAmount,
-                     string memory name, 
-                     string memory uri,
-                     bool isDead) {
-
-        address _owner = _ownerOf(tokenId);
-        uint256 _id = _hungas[tokenId].id;
-        uint256 _typeId = _hungas[tokenId].typeId;
-        uint256 _typeIndex = _hungas[tokenId].typeIndex;
-        uint256 _level = _hungas[tokenId].level;
-        uint256 _experience = _hungas[tokenId].experience;
-        uint256 _evolution = _hungas[tokenId].evolution;
-        uint256 _nextHarvestAmount = _hungas[tokenId].nextHarvestAmount;
-        uint256 _fetchCount = _hungas[tokenId].fetchCount;
-        bool _isFetching = _hungas[tokenId].isFetching;
-        uint256 _rarity = _hungaTypes[_typeId].rarity;
-        uint256 _element = _hungaTypes[_typeId].element;
-
-        string memory _name = _hungaTypes[_typeId].name;
-        string memory _uri = _hungaTypes[_typeId].uri[_evolution];
-
-        bool _isDead = _hungas[tokenId].isDead;
-
-        return 
-           (_owner, 
-            _id, 
-            _typeId, 
-            _typeIndex, 
-            _level, 
-            _experience, 
-            _evolution, 
-            _rarity, 
-            _element, 
-            _fetchCount, 
-            _isFetching, 
-            _nextHarvestAmount,
-            _name, 
-            _uri,
-            _isDead
+    function getHungaBasicInfo(uint256 tokenId) public view 
+            returns (address owner, uint256 id, uint256 typeId, uint256 typeIndex) {
+        return (
+            _ownerOf(tokenId),
+            _hungas[tokenId].id,
+            _hungas[tokenId].typeId,
+            _hungas[tokenId].typeIndex
         );
-    } 
+    }
+
+    function getHungaStats(uint256 tokenId) public view 
+            returns (uint256 level, uint256 experience, uint256 evolution, bool isDead) {
+        return (
+            _hungas[tokenId].level,
+            _hungas[tokenId].experience,
+            _hungas[tokenId].evolution,
+            _hungas[tokenId].isDead
+        );
+    }
+
+    function getHungaTypeInfo(uint256 tokenId) public view 
+            returns (uint256 rarity, uint256 element, string memory name, string memory uri) {
+        uint256 typeId = _hungas[tokenId].typeId;
+        uint256 evolution = _hungas[tokenId].evolution;
+        return (
+            _hungaTypes[typeId].rarity,
+            _hungaTypes[typeId].element,
+            _hungaTypes[typeId].name,
+            _hungaTypes[typeId].uri[evolution]
+        );
+    }
+
+    function getHungaFetchInfo(uint256 tokenId) public view 
+            returns (uint256 fetchCount, bool isFetching, uint256 nextHarvestAmount) {
+        return (
+            _hungas[tokenId].fetchCount,
+            _hungas[tokenId].isFetching,
+            _hungas[tokenId].nextHarvestAmount
+        );
+    }
+
+    function getHungaInfo(uint256 tokenId) public view returns (HungaInfo memory) {
+        Hunga memory hunga = _hungas[tokenId];
+        HungaType storage hungaType = _hungaTypes[hunga.typeId];
+        
+        return HungaInfo({
+            owner: _ownerOf(tokenId),
+            id: hunga.id,
+            typeId: hunga.typeId,
+            typeIndex: hunga.typeIndex,
+            level: hunga.level,
+            experience: hunga.experience,
+            evolution: hunga.evolution,
+            rarity: hungaType.rarity,
+            element: hungaType.element,
+            fetchCount: hunga.fetchCount,
+            isFetching: hunga.isFetching,
+            nextHarvestAmount: hunga.nextHarvestAmount,
+            name: hungaType.name,
+            uri: hungaType.uri[hunga.evolution],
+            isDead: hunga.isDead
+        });
+    }
+
+    // Temporarily removed complex getHunga function due to stack too deep error
+    // Use getHungaInfo() instead which returns a struct 
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         return _hungaTypes[_hungas[tokenId].typeId].uri[_hungas[tokenId].evolution];
+    }
+
+    function addPackType(uint256 fromTypeIndex, uint256 toTypeIndex) public onlyOwner {
+        if(fromTypeIndex >= _hungaTypeCount || toTypeIndex >= _hungaTypeCount) revert("Invalid type index");
+        uint256 id = _nextPackTypeId;
+        _nextPackTypeId += 1;
+        _packTypes[id].id = id;
+        _packTypes[id].fromTypeIndex = fromTypeIndex;
+        _packTypes[id].toTypeIndex = toTypeIndex;
     }
 
     function aquirePack (uint256 packTypeId) public {
@@ -201,8 +243,9 @@ contract HunganzV1 is ERC721, Ownable {
         _hungas[_nextTokenId].fetchCount = 0;
         _hungas[_nextTokenId].isFetching = false;
         _hungas[_nextTokenId].commitRound = 0;
-        _nextTokenId += 1;
+        _hungas[_nextTokenId].nextHarvestAmount = 100; // Initialize with base harvest amount
         emit HungaMinted(msg.sender, _nextTokenId, typeId, randomIndex);
+        _nextTokenId += 1;
 
         //remove the pack at index 0;
         _packs[msg.sender].indexToOpen += 1;
@@ -230,6 +273,7 @@ contract HunganzV1 is ERC721, Ownable {
         bytes32 randomSource = RNG.beaconAt(_hungas[tokenId].commitRound);
         uint256 random = FlowCommitRevealLib.deriveUint(randomSource, "fetch");
         uint256 probability = _calculateProbability(tokenId);
+        _hungas[tokenId].isFetching = false;
         if(random < probability) {
             BANANE.mint(msg.sender, _hungas[tokenId].nextHarvestAmount);
             _xpUp(tokenId, _hungas[tokenId].nextHarvestAmount);
@@ -242,7 +286,6 @@ contract HunganzV1 is ERC721, Ownable {
             _burn(tokenId);
             emit RIP(tokenId);
         }
-        _hungas[tokenId].isFetching = false;
         emit RevealedFetching(tokenId);
     }
 
