@@ -1,0 +1,70 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a202c;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2d3748;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a365d;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="treeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2d5016;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a2e05;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Sky background -->
+  <rect width="1920" height="1080" fill="url(#skyGradient)"/>
+  
+  <!-- Mountains in background -->
+  <polygon points="0,600 300,400 600,500 900,350 1200,450 1500,300 1920,400 1920,1080 0,1080" fill="#2a4365" opacity="0.7"/>
+  
+  <!-- Trees -->
+  <g fill="url(#treeGradient)">
+    <!-- Tree 1 -->
+    <rect x="100" y="700" width="40" height="200" fill="#4a5568"/>
+    <circle cx="120" cy="650" r="80" opacity="0.9"/>
+    
+    <!-- Tree 2 -->
+    <rect x="300" y="750" width="50" height="180" fill="#4a5568"/>
+    <circle cx="325" cy="700" r="100" opacity="0.8"/>
+    
+    <!-- Tree 3 -->
+    <rect x="500" y="720" width="35" height="220" fill="#4a5568"/>
+    <circle cx="517" cy="670" r="90" opacity="0.9"/>
+    
+    <!-- Tree 4 -->
+    <rect x="800" y="740" width="45" height="190" fill="#4a5568"/>
+    <circle cx="822" cy="690" r="95" opacity="0.8"/>
+    
+    <!-- Tree 5 -->
+    <rect x="1200" y="710" width="40" height="210" fill="#4a5568"/>
+    <circle cx="1220" cy="660" r="85" opacity="0.9"/>
+    
+    <!-- Tree 6 -->
+    <rect x="1500" y="730" width="50" height="200" fill="#4a5568"/>
+    <circle cx="1525" cy="680" r="105" opacity="0.8"/>
+  </g>
+  
+  <!-- Foreground bushes -->
+  <g fill="#2d5016" opacity="0.6">
+    <ellipse cx="200" cy="950" rx="150" ry="50"/>
+    <ellipse cx="600" cy="980" rx="200" ry="60"/>
+    <ellipse cx="1100" cy="960" rx="180" ry="55"/>
+    <ellipse cx="1600" cy="970" rx="160" ry="50"/>
+  </g>
+  
+  <!-- Mystical particles -->
+  <g fill="#fbbf24" opacity="0.7">
+    <circle cx="400" cy="300" r="3">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="800" cy="250" r="2">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1300" cy="320" r="4">
+      <animate attributeName="opacity" values="0.2;0.8;0.2" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1600" cy="280" r="3">
+      <animate attributeName="opacity" values="0.4;1;0.4" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>

@@ -10,6 +10,10 @@
     "deploy:mainnet": "npx hardhat ignition deploy ignition/modules/HunganzEcosystem.ts --network flowMainnet",
     "ipfs:upload": "node utils/ipfs-uploader.js",
     "ipfs:batch": "node utils/batch-upload.js",
+    "packs:add": "npx hardhat run scripts/addPacks.js --network flowMainnet",
+    "packs:verify": "npx hardhat run scripts/verifyPackTypes.ts",
+    "packs:verify:testnet": "npx hardhat run scripts/verifyPackTypes.ts --network flowTestnet",
+    "packs:verify:mainnet": "npx hardhat run scripts/verifyPackTypes.ts --network flowMainnet",
     "clean": "npx hardhat clean"
   },
   "devDependencies": {
