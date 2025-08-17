@@ -22,12 +22,12 @@
  *     └── 4.png
  */
 
-const fs = require('fs');
-const path = require('path');
-const FormData = require('form-data');
-const axios = require('axios');
-const { ethers } = require('ethers');
-require('dotenv').config();
+import fs from 'fs';
+import path from 'path';
+import FormData from 'form-data';
+import axios from 'axios';
+import { ethers } from 'ethers';
+import 'dotenv/config';
 
 // Configuration
 const PINATA_JWT = process.env.PINATA_JWT;
@@ -62,19 +62,15 @@ const HUNGANZ_ABI = [
 
 class IPFSUploader {
   constructor() {
-    // Setup Pinata authentication (supports both JWT and API key methods)
+    // Setup Pinata authentication (modern JWT method)
     const pinataHeaders = {};
     
     if (PINATA_JWT) {
       // Modern JWT authentication (recommended)
       pinataHeaders['Authorization'] = `Bearer ${PINATA_JWT}`;
-    } else if (PINATA_API_KEY && PINATA_SECRET_KEY) {
-      // Legacy API key + secret authentication
-      pinataHeaders['pinata_api_key'] = PINATA_API_KEY;
-      pinataHeaders['pinata_secret_api_key'] = PINATA_SECRET_KEY;
     } else if (PINATA_API_KEY) {
-      // API key only (may work for some endpoints)
-      pinataHeaders['pinata_api_key'] = PINATA_API_KEY;
+      // Use API key as Bearer token (new Pinata method)
+      pinataHeaders['Authorization'] = `Bearer ${PINATA_API_KEY}`;
     } else {
       throw new Error('No Pinata authentication credentials found. Please set PINATA_JWT or PINATA_API_KEY in your .env file.');
     }
@@ -119,10 +115,8 @@ class IPFSUploader {
     // Show authentication method being used
     if (PINATA_JWT) {
       console.log('🔑 Using Pinata JWT authentication (recommended)');
-    } else if (PINATA_API_KEY && PINATA_SECRET_KEY) {
-      console.log('🔑 Using Pinata API Key + Secret authentication');
     } else if (PINATA_API_KEY) {
-      console.log('🔑 Using Pinata API Key only (may have limited functionality)');
+      console.log('🔑 Using Pinata API Key as Bearer token');
     }
   }
 
@@ -130,6 +124,7 @@ class IPFSUploader {
    * Scan images directory and organize by character
    */
   scanImagesDirectory() {
+    const __dirname = path.dirname(new URL(import.meta.url).pathname);
     const imagesDir = path.join(__dirname, '..', 'images');
     
     if (!fs.existsSync(imagesDir)) {
@@ -230,7 +225,7 @@ class IPFSUploader {
   async uploadCharacterImages(characterName, evolutionImages) {
     console.log(`\n🦄 Processing ${characterName}...`);
     
-    const uris = new Array(5).fill(''); // 5 evolution stages (0-4)
+    const uris = new Array(4).fill(''); // 4 evolution stages (0-3) as per contract
     
     for (const image of evolutionImages) {
       const ipfsUrl = await this.uploadImageToIPFS(
@@ -254,7 +249,7 @@ class IPFSUploader {
     try {
       console.log(`📝 Adding ${characterName} to contract...`);
       console.log(`   Rarity: ${rarity}, Element: ${element}`);
-      console.log(`   URIs: ${uris.filter(uri => uri).length}/5 provided`);
+      console.log(`   URIs: ${uris.filter(uri => uri).length}/4 provided`);
 
       const tx = await this.contract.addType(
         characterName,
@@ -279,7 +274,8 @@ class IPFSUploader {
    * Interactive prompt for character attributes
    */
   async promptCharacterAttributes(characterName) {
-    const readline = require('readline');
+    const { createInterface } = await import('readline');
+    const readline = { createInterface };
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
@@ -353,9 +349,9 @@ class IPFSUploader {
 }
 
 // Run the uploader if called directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   const uploader = new IPFSUploader();
   uploader.run();
 }
 
-module.exports = IPFSUploader;
+export default IPFSUploader;

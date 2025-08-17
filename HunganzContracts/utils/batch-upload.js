@@ -7,7 +7,7 @@
  * to avoid manual input for each character during upload.
  */
 
-const IPFSUploader = require('./ipfs-uploader');
+import IPFSUploader from './ipfs-uploader.js';
 
 // Predefined character configurations
 // All characters set to rarity 0 (Common) as requested
@@ -81,7 +81,8 @@ class BatchUploader extends IPFSUploader {
         }
       }
 
-      const readline = require('readline');
+      const { createInterface } = await import('readline');
+      const readline = { createInterface };
       const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
@@ -145,9 +146,9 @@ class BatchUploader extends IPFSUploader {
 }
 
 // Run the batch uploader if called directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   const uploader = new BatchUploader();
   uploader.runBatch();
 }
 
-module.exports = BatchUploader;
+export default BatchUploader;
